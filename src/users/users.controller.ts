@@ -1,7 +1,8 @@
-import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Patch, Post, Req, UseGuards } from '@nestjs/common';
 import { Request } from 'express';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { CreateUserDto } from './dto/createUser.dto';
+import { UpdateUserDto } from './dto/updateUser.dto';
 import { UserLoginDto } from './dto/userLogin.dto';
 import { UsersService } from './users.service';
 
@@ -16,15 +17,26 @@ export class UsersController {
         return this.usersService.createUserProfile(createUserDto);
     }
 
-    @Post('/login')
-    login(@Body() userLoginDto: UserLoginDto) {
-        return this.usersService.login(userLoginDto);
-    }
-
-
     @UseGuards(JwtAuthGuard)
     @Get('/profile')
     getUsersProfile(@Req() req: Request) {
-        return this.usersService.getUsersProfileById(req.user);
+        return this.usersService.getUsersProfile(req.user);
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @Patch('/update')
+    updateUsersProfile(@Body() updateUserDto: UpdateUserDto, @Req() req: Request) {
+        return this.usersService.updateUsersProfile(updateUserDto, req.user);
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @Delete('/delete')
+    deleteUsersProfile(@Req() req: Request) {
+        return this.usersService.deleteUsersProfile(req.user);
+    }
+
+    @Post('/login')
+    login(@Body() userLoginDto: UserLoginDto) {
+        return this.usersService.login(userLoginDto);
     }
 }
