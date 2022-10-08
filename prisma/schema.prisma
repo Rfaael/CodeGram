@@ -24,8 +24,32 @@ model User {
   yearBirth   Int
 
   frindsList  String?
-  postsList   String?
+  postsList   Post[]
 
   created_at  DateTime @default(now())
   updated_at  DateTime @updatedAt()
 }
+
+model Post {
+  id          String @unique @id
+
+  author      User @relation(fields: [authorId], references: [id])
+  authorId    String
+
+  likes       String?
+  comments    String?
+
+  photo       String
+  description String?
+
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt()
+}
+
+
+// User => Post[] 
+
+// Post => Comments[] / Likes[]
+
+// USER => [Like] <= POST
+// USER => [Comments] <= POST

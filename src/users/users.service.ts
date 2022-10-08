@@ -2,11 +2,13 @@ import { ForbiddenException, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateUserDto } from './dto/createUser.dto';
 import {v4 as uuid} from "uuid";
-import {hash, verify} from "argon2";
-import { User } from '@prisma/client';
+import {hash} from "argon2";
+import { User, Post } from '@prisma/client';
 import { UserLoginDto } from './dto/userLogin.dto';
 import { AuthService } from 'src/auth/auth.service';
 import { UpdateUserDto } from './dto/updateUser.dto';
+import { CreatePostDto } from './dto/createPost.dto';
+import { UpdatePostDto } from './dto/updatePost.dto';
 
 @Injectable()
 export class UsersService {
@@ -63,7 +65,8 @@ export class UsersService {
                 firstName: true,
                 lastName: true,
                 created_at: true,
-                updated_at: true
+                updated_at: true,
+                postsList: true
             }
         });
 
@@ -104,6 +107,75 @@ export class UsersService {
         });
 
         return user;
+    }
+
+    async createPost(createPostDto: CreatePostDto, userPayload: any): Promise<Post> {
+        const {userId} = userPayload;
+        const post = await this.prismaService.post.create({
+            data: {
+                id: uuid(),
+                authorId:userId,
+                ...createPostDto
+            }
+        });
+
+        return post;
+    }
+
+    async getUsersPosts(userPayLoad: any): Promise<any> {
+        const {userId} = userPayLoad;
+
+        const userPosts = await this.prismaService.post.findMany({
+            where: {
+                authorId: userId
+            }
+        });
+
+        if(userPosts.length === 0) return {message: 'The user does not have a post yet!'};
+
+        return userPosts;
+    }
+
+    async updateUsersPosts(postId: string, updatePostDto: UpdatePostDto, userPayLoad: any): Promise<any> {
+        if(!postId) throw new ForbiddenException('The post id is not provided!');
+
+        //CHECK IF THE POST BELONGS TO THE USER
+        const usersPosts = await this.getUsersPosts(userPayLoad);
+
+        const postBelongsUser = usersPosts.filter((post) => post.id === postId);
+
+        if(postBelongsUser.length === 0) throw new ForbiddenException('This post does not belong to this user!');
+
+        const post = await this.prismaService.post.update({
+            where: {
+                id: postId,
+            },
+            data: {
+                ...updatePostDto
+            }
+        });
+
+        return post;
+    }   
+
+    async deleteUsersPosts(postId: string, userPayLoad: any): Promise<void> {
+        if(!postId) throw new ForbiddenException('The post id is not provided!');
+
+        //CHECK IF THE POST BELONGS TO THE USER
+        const usersPosts = await this.getUsersPosts(userPayLoad);
+
+        const postBelongsUser = usersPosts.filter((post) => post.id === postId);
+
+        //CHECK IF THE POST EXISTS
+        if(postBelongsUser.length === 0) throw new ForbiddenException('This post does not belong to this user!');
+
+        const post = await this.prismaService.post.delete({
+            where: {
+                id: postId
+            }
+        });
+
+        return;
     }
 
     login(userLoginDto: UserLoginDto) {
