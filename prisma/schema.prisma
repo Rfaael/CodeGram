@@ -21,7 +21,7 @@ model User {
 
   dayBirth    Int
   monthBirth  Int
-  yearBrith   Int
+  yearBirth   Int
 
   frindsList  String?
   postsList   String?
