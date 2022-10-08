@@ -49,11 +49,27 @@ export class UsersService {
         return userProfile;
     }
 
-    getUserById() {
-        
+    async getUsersProfileById(userPayload: any): Promise<any> {
+        const {userId} = userPayload;
+
+        const userProfile = await this.prismaService.user.findFirst({
+            where: {
+                id: userId
+            },
+            select: {
+                id: true,
+                email: true,
+                firstName: true,
+                lastName: true,
+                created_at: true,
+                updated_at: true
+            }
+        });
+
+        return userProfile;
     }
 
-    updateUserById() {
+    updateUsersById() {
 
     }
 
