@@ -125,8 +125,32 @@ export class MainPageService {
         return;
     }
 
-    async updateCommentOnPost(postId: string, commentId: string, userPayLoad: any) {
+    async updateCommentOnPost(commentContent: string, postId: string, commentId: string, userPayLoad: any): Promise<void> {
+        const {userId} = userPayLoad;
 
+        //CHECK IF THE COMMENT BELONGS TO THE USER
+        const commentBelongTest = await this.prismaService.relationCommentsPost.findFirst({
+            where: {
+                id: commentId
+            }
+        });
+
+        const commentBelongUser = commentBelongTest.authorId == userId;
+
+        if(!commentBelongUser) throw new ForbiddenException('This comment does not belong to this user.');
+
+
+        const updateComment = await this.prismaService.relationCommentsPost.update({
+            where: {
+                id: postId
+            },
+            data: {
+
+            }
+        });
+        
+
+        return;
     }
 
     async deleteCommmentOnPost(postId: string, commentId: string, userPayLoad: any) {

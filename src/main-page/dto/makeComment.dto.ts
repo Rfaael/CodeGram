@@ -4,5 +4,4 @@ export class MakeCommentDto {
     @IsNotEmpty()
     @IsString()
     commentContent: string;
-
 }

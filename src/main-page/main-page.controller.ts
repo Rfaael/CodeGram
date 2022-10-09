@@ -12,6 +12,10 @@ export class MainPageController {
         private mainPageService: MainPageService
     ){}
 
+    // ===============//
+    // ===> POST =====//
+    // ===============//
+
     @UseGuards(JwtAuthGuard)
     @Post('/posts/create')
     createPost(@Body() createPostDto: CreatePostDto, @Req() req: Request) {
@@ -35,6 +39,10 @@ export class MainPageController {
         return this.mainPageService.deleteUsersPosts(postId, req.user);
     }
 
+    // ====================//
+    // ===> COMMENTS =====//
+    // ===================//
+
     @UseGuards(JwtAuthGuard)
     @Post('/posts/:id/comments/create')
     makeCommentOnPost(@Param('id') postId: string, @Body() makeCommentDto: MakeCommentDto, @Req() req: Request) {
@@ -43,7 +51,7 @@ export class MainPageController {
 
     @UseGuards(JwtAuthGuard)
     @Patch('/posts/:id/comments/update/:commentId')
-    updateCommentOnPost(@Param('id') postId: string, @Param('commentId') commentId: string, @Req() req: Request) {
+    updateCommentOnPost(@Body('commentContent') commentContent: string, @Param('id') postId: string, @Param('commentId') commentId: string, @Req() req: Request) {
 
     }
 
