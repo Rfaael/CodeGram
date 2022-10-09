@@ -6,8 +6,8 @@ import { MainPageService } from './main-page/main-page.service';
 import { MainPageModule } from './main-page/main-page.module';
 
 @Module({
-  imports: [UsersModule, MainPageModule, MainPageModule],
-  controllers: [MainPageController],
-  providers: [AuthModule, MainPageService],
+  imports: [UsersModule, MainPageModule],
+  controllers: [],
+  providers: [AuthModule],
 })
 export class AppModule {}
