@@ -11,23 +11,26 @@ datasource db {
 }
 
 model User {
-  id          String @unique @id
+  id              String @unique @id
 
-  firstName   String
-  lastName    String
+  firstName       String
+  lastName        String
 
-  email       String
-  password    String
+  email           String
+  password        String
 
-  dayBirth    Int
-  monthBirth  Int
-  yearBirth   Int
+  dayBirth        Int
+  monthBirth      Int
+  yearBirth       Int
 
-  frindsList  String?
-  postsList   Post[]
+  frindsList      String?
+  postsList       Post[]
 
-  created_at  DateTime @default(now())
-  updated_at  DateTime @updatedAt()
+  likeOnPosts     RelationLikesPost[]
+  commentsOnPosts RelationCommentsPost[]
+
+  created_at      DateTime @default(now())
+  updated_at      DateTime @updatedAt()
 }
 
 model Post {
@@ -36,14 +39,43 @@ model Post {
   author      User @relation(fields: [authorId], references: [id])
   authorId    String
 
-  likes       String?
-  comments    String?
+  likes       RelationLikesPost[]
+  comments    RelationCommentsPost[]
 
   photo       String
   description String?
 
   created_at  DateTime @default(now())
   updated_at  DateTime @updatedAt()
+}
+
+model RelationLikesPost {
+  id          String @unique @id
+
+  author User @relation(fields: [authorId], references: [id])
+  authorId    String
+
+  post Post   @relation(fields: [postId], references: [id])
+  postId      String
+
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt()
+}
+
+
+model RelationCommentsPost {
+  id              String @unique @id
+
+  commentContent  String 
+
+  author User     @relation(fields: [authorId], references: [id])
+  authorId        String
+
+  post Post       @relation(fields: [postId], references: [id])
+  postId          String
+
+  created_at     DateTime @default(now())
+  updated_at     DateTime @updatedAt()
 }
 
 

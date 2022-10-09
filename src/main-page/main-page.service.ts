@@ -25,7 +25,14 @@ export class MainPageService {
         return post;
     }
 
-    async getUsersPosts(userPayLoad: any): Promise<any> {
+    async getAllUsersPosts(): Promise<Post[]> {
+        const allPosts = await this.prismaService.post.findMany();
+
+        return allPosts;
+    }
+
+    //INTERNAL METHOD
+    async getUsersPostsById(userPayLoad: any): Promise<any> {
         const {userId} = userPayLoad;
 
         const userPosts = await this.prismaService.post.findMany({
@@ -43,7 +50,7 @@ export class MainPageService {
         if(!postId) throw new ForbiddenException('The post id is not provided!');
 
         //CHECK IF THE POST BELONGS TO THE USER
-        const usersPosts = await this.getUsersPosts(userPayLoad);
+        const usersPosts = await this.getUsersPostsById(userPayLoad);
 
         const postBelongsUser = usersPosts.filter((post) => post.id === postId);
 
@@ -65,7 +72,7 @@ export class MainPageService {
         if(!postId) throw new ForbiddenException('The post id is not provided!');
 
         //CHECK IF THE POST BELONGS TO THE USER
-        const usersPosts = await this.getUsersPosts(userPayLoad);
+        const usersPosts = await this.getUsersPostsById(userPayLoad);
 
         const postBelongsUser = usersPosts.filter((post) => post.id === postId);
 

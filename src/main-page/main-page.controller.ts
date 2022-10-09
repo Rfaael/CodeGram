@@ -10,17 +10,16 @@ export class MainPageController {
     constructor(
         private mainPageService: MainPageService
     ){}
-    
+
     @UseGuards(JwtAuthGuard)
     @Post('/posts/create')
     createPost(@Body() createPostDto: CreatePostDto, @Req() req: Request) {
         return this.mainPageService.createPost(createPostDto, req.user);
     }
 
-    @UseGuards(JwtAuthGuard)
     @Get('/posts')
-    getUsersPosts(@Req() req: Request) {
-        return this.mainPageService.getUsersPosts(req.user);
+    getAllUsersPosts() {
+        return this.mainPageService.getAllUsersPosts();
     }
 
     @UseGuards(JwtAuthGuard)
