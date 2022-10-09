@@ -4,6 +4,7 @@ import { UpdatePostDto } from './dto/updatePost.dto';
 import {v4 as uuid} from "uuid";
 import { CreatePostDto } from './dto/createPost.dto';
 import { Post } from '@prisma/client';
+import { MakeCommentDto } from './dto/makeComment.dto';
 
 
 @Injectable()
@@ -11,7 +12,9 @@ export class MainPageService {
     constructor(
         private prismaService: PrismaService
     ) {}
-
+    // ================//
+    // ===> POSTS =====//
+    // ================//
     async createPost(createPostDto: CreatePostDto, userPayload: any): Promise<Post> {
         const {userId} = userPayload;
         const post = await this.prismaService.post.create({
@@ -26,11 +29,16 @@ export class MainPageService {
     }
 
     async getAllUsersPosts(): Promise<Post[]> {
-        const allPosts = await this.prismaService.post.findMany();
+        const allPosts = await this.prismaService.post.findMany({
+            include: {
+                comments: true
+            }
+        });
+
+        //HAVE TO RETURN ALL COMMENTS AND LIKES RELATED ON THOSE POST
 
         return allPosts;
     }
-
     //INTERNAL METHOD
     async getUsersPostsById(userPayLoad: any): Promise<any> {
         const {userId} = userPayLoad;
@@ -86,5 +94,42 @@ export class MainPageService {
         });
 
         return;
+    }
+
+    // ====================//
+    // ===> COMMENTS =====//
+    // ===================//
+
+    async makeCommentOnPost(postId: string, makeCommentDto: MakeCommentDto, userPayload: any): Promise<void> {
+        const {userId} = userPayload;
+
+        // CHECK IF THE POSTID IS AN EXISTING POST
+        const postExists = await this.prismaService.post.findFirst({
+            where: {
+                id: postId
+            }
+        });
+
+        if(!postExists) throw new ForbiddenException('Post does not exists');
+
+        //CREATE THE COMMENT
+        const commentOnPost = await this.prismaService.relationCommentsPost.create({
+            data: {
+                id: uuid(),
+                postId,
+                authorId: userId,
+                commentContent: makeCommentDto.commentContent
+            }
+        });
+
+        return;
+    }
+
+    async updateCommentOnPost(postId: string, commentId: string, userPayLoad: any) {
+
+    }
+
+    async deleteCommmentOnPost(postId: string, commentId: string, userPayLoad: any) {
+
     }
 }

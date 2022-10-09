@@ -2,6 +2,7 @@ import { Body, Controller, Delete, Get, Param, Patch, Post, Req, UseGuards } fro
 import { Request } from 'express';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { CreatePostDto } from './dto/createPost.dto';
+import { MakeCommentDto } from './dto/makeComment.dto';
 import { UpdatePostDto } from './dto/updatePost.dto';
 import { MainPageService } from './main-page.service';
 
@@ -32,5 +33,23 @@ export class MainPageController {
     @Delete('/posts/delete/:id')
     deleteUsersPost(@Param('id') postId: string, @Req() req: Request) {
         return this.mainPageService.deleteUsersPosts(postId, req.user);
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @Post('/posts/:id/comments/create')
+    makeCommentOnPost(@Param('id') postId: string, @Body() makeCommentDto: MakeCommentDto, @Req() req: Request) {
+        return this.mainPageService.makeCommentOnPost(postId, makeCommentDto, req.user);
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @Patch('/posts/:id/comments/update/:commentId')
+    updateCommentOnPost(@Param('id') postId: string, @Param('commentId') commentId: string, @Req() req: Request) {
+
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @Delete('/posts/:id/comments/delete/:commentId')
+    deleteCommentOnPost(@Param('id') postId: string, @Param('commentId') commentId: string, @Req() req: Request) {
+
     }
 }
