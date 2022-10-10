@@ -139,13 +139,17 @@ export class MainPageService {
 
         if(!commentBelongUser) throw new ForbiddenException('This comment does not belong to this user.');
 
+        //CHECK IF THE COMMENT BELONGS TO THE POST
+        const commentBelongPost = commentBelongTest.postId === postId;
+
+        if(!commentBelongPost) throw new ForbiddenException('This comment does not belongs to this post!');
 
         const updateComment = await this.prismaService.relationCommentsPost.update({
             where: {
-                id: postId
+                id: commentId
             },
             data: {
-
+                commentContent
             }
         });
         
@@ -153,7 +157,27 @@ export class MainPageService {
         return;
     }
 
-    async deleteCommmentOnPost(postId: string, commentId: string, userPayLoad: any) {
+    async deleteCommentOnPost(postId: string, commentId: string, userPayLoad: any): Promise<void> {
+        const {userId} = userPayLoad;
 
+        //CHECK IF THE COMMENT BELONGS TO THE USER
+
+        const commentBelongsUser = await this.prismaService.relationCommentsPost.findFirst({
+            where: {
+                id: commentId
+            }
+        });
+
+        const commentsBelongsUsersTest = commentBelongsUser.authorId === userId;
+
+        if(!commentsBelongsUsersTest) throw new ForbiddenException('This comment does not belongs to this user!');
+
+        const deletedComment = await this.prismaService.relationCommentsPost.delete({
+            where: {
+                id: commentId
+            }
+        });
+
+        return;
     }
 }

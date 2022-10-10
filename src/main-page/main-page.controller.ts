@@ -52,12 +52,12 @@ export class MainPageController {
     @UseGuards(JwtAuthGuard)
     @Patch('/posts/:id/comments/update/:commentId')
     updateCommentOnPost(@Body('commentContent') commentContent: string, @Param('id') postId: string, @Param('commentId') commentId: string, @Req() req: Request) {
-
+        return this.mainPageService.updateCommentOnPost(commentContent, postId, commentId, req.user);
     }
 
     @UseGuards(JwtAuthGuard)
     @Delete('/posts/:id/comments/delete/:commentId')
     deleteCommentOnPost(@Param('id') postId: string, @Param('commentId') commentId: string, @Req() req: Request) {
-
+        return this.mainPageService.deleteCommentOnPost(postId, commentId, req.user);
     }
 }
