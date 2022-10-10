@@ -31,7 +31,8 @@ export class MainPageService {
     async getAllUsersPosts(): Promise<Post[]> {
         const allPosts = await this.prismaService.post.findMany({
             include: {
-                comments: true
+                comments: true,
+                likes: true,
             }
         });
 
@@ -178,6 +179,74 @@ export class MainPageService {
             }
         });
 
+        return;
+    }
+
+    // ================//
+    // ===> LIKES =====//
+    // ================//
+
+    async likeOnPost(postId: string, userPayload: any) {
+        const {userId} = userPayload;
+
+        //CHECK IF THE POST EXISTS
+        const postExists = await this.prismaService.post.findFirst({
+            where: {
+                id: postId
+            }
+        });
+
+        if(!postExists) throw new ForbiddenException('Post does not exists');
+
+        const like = await this.prismaService.relationLikesPost.create({
+            data: {
+                id: uuid(),
+                authorId: userId,
+                postId
+            }
+        });
+
+        return like;
+    }
+
+    async deleteLikeOnPost(postId: string, likeId: string, userPayload: any): Promise<void> {
+        const {userId} = userPayload;
+
+        //CHECK IF THE POST EXISTS
+        const postExists = await this.prismaService.post.findFirst({
+            where: {
+                id: postId
+            }
+        });
+
+        if(!postExists) throw new ForbiddenException('Post does not exists');
+
+
+        const belongLikeTest = await this.prismaService.relationLikesPost.findFirst({
+            where: {
+                id: likeId
+            }
+        });
+
+        //CHECK IF THE LIKE EXISTS
+        if(!belongLikeTest) throw new ForbiddenException('Like does not exists on this post.');
+
+        //CHECK IF THE LIKE BELONGS TO THE USER
+        const likeBelongsUser = belongLikeTest.authorId === userId;
+        
+        if(!likeBelongsUser)throw new ForbiddenException('This like does not belongs to this user.');
+
+        //CHECK IF THE LIKE BELONGS TO THE POST
+        const likeBelongsPost = belongLikeTest.postId === postId;
+
+        if(!likeBelongsPost)throw new ForbiddenException('This like does not belongs to this post.');
+
+        const deletedLike = await this.prismaService.relationLikesPost.delete({
+            where: {
+                id: likeId
+            }
+        })
+        
         return;
     }
 }

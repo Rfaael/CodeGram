@@ -60,4 +60,20 @@ export class MainPageController {
     deleteCommentOnPost(@Param('id') postId: string, @Param('commentId') commentId: string, @Req() req: Request) {
         return this.mainPageService.deleteCommentOnPost(postId, commentId, req.user);
     }
+
+    // ================//
+    // ===> LIKES =====//
+    // ================//
+
+    @UseGuards(JwtAuthGuard)
+    @Post('/posts/:id/like')
+    likeOnPost(@Param('id') postId: string, @Req() req: Request) {
+        return this.mainPageService.likeOnPost(postId, req.user);
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @Delete('/posts/:id/like/delete/:likeId')
+    deleteLikeOnPost(@Param('id') postId: string, @Param('likeId') likeId: string, @Req() req: Request) {
+        return this.mainPageService.deleteLikeOnPost(postId, likeId, req.user);
+    }   
 }
