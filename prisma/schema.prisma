@@ -23,7 +23,11 @@ model User {
   monthBirth      Int
   yearBirth       Int
 
-  frindsList      String?
+  //LISTA DE TODOS OS PEDIDOS DE AMIZADE QUE O USUARIO DONO PERFIL ENVIOOU
+  frindsListRequest   FriendshipRequest[] @relation("toUserRequest")
+  //LISTA DE TODOS OS USUARIO QUE ENVIARAM PEDIDO DE AMIZADE PARA O USUARIO DONO DO PERFIL.
+  friendsListReceived FriendshipRequest[] @relation("fromUserRequest")
+
   postsList       Post[]
 
   likeOnPosts     RelationLikesPost[]
@@ -76,6 +80,21 @@ model RelationCommentsPost {
 
   created_at     DateTime @default(now())
   updated_at     DateTime @updatedAt()
+}
+
+model FriendshipRequest {
+  id String @unique @id
+
+  friendshipRequestStatus Boolean @default(false)
+
+  fromUser User @relation(fields: [fromUserId],references: [id],  name: "fromUserRequest")
+  fromUserId String
+
+  toUser User @relation(fields: [toUserId], references: [id], name: "toUserRequest")
+  toUserId String
+
+  created_at      DateTime @default(now())
+  updated_at      DateTime @updatedAt()
 }
 
 

@@ -12,6 +12,7 @@ export class MainPageService {
     constructor(
         private prismaService: PrismaService
     ) {}
+    
     // ================//
     // ===> POSTS =====//
     // ================//

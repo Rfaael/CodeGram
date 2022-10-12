@@ -66,7 +66,9 @@ export class UsersService {
                 lastName: true,
                 created_at: true,
                 updated_at: true,
-                postsList: true
+                postsList: true,
+                frindsListRequest: true,
+                friendsListReceived: true
             }
         });
 
@@ -107,6 +109,32 @@ export class UsersService {
         });
 
         return user;
+    }
+
+    //
+    // SEND A FRIENDSHIP REQUEST
+    //
+
+    async sendFriendshipRequest(toUserId: string, userPayload: any): Promise<void> {
+        const {userId} = userPayload;
+        //CHECK IF THE USER EXISTS  
+        const userExists = await this.prismaService.user.findFirst({
+            where:{
+                id: userId
+            }
+        });
+        
+        if(!userExists) throw new ForbiddenException('User does not exists');
+
+        const friendship = await this.prismaService.friendshipRequest.create({
+            data: {
+                id: uuid(),
+                toUserId: toUserId,
+                fromUserId: userId
+            }
+        });
+
+        return;
     }
 
     login(userLoginDto: UserLoginDto) {

@@ -37,6 +37,13 @@ export class UsersController {
         return this.usersService.deleteUsersProfile(req.user);
     }
 
+    @UseGuards(JwtAuthGuard)
+    @Post('/friends/request/')
+    sendFriendshipRequest(@Body('id') id: string, @Req() req: Request) {
+        return this.usersService.sendFriendshipRequest(id, req.user);
+    }
+
+
     @Post('/login')
     login(@Body() userLoginDto: UserLoginDto) {
         return this.usersService.login(userLoginDto);
