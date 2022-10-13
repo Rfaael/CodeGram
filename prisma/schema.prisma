@@ -24,9 +24,9 @@ model User {
   yearBirth       Int
 
   //LISTA DE TODOS OS PEDIDOS DE AMIZADE QUE O USUARIO DONO PERFIL ENVIOOU
-  frindsListRequest   FriendshipRequest[] @relation("toUserRequest")
+  frindsListRequest   FriendshipRequest[] @relation("fromUserRequest")
   //LISTA DE TODOS OS USUARIO QUE ENVIARAM PEDIDO DE AMIZADE PARA O USUARIO DONO DO PERFIL.
-  friendsListReceived FriendshipRequest[] @relation("fromUserRequest")
+  friendsListReceived FriendshipRequest[] @relation("toUserRequest")
 
   postsList       Post[]
 

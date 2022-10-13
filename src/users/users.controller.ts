@@ -38,11 +38,22 @@ export class UsersController {
     }
 
     @UseGuards(JwtAuthGuard)
-    @Post('/friends/request/')
+    @Get('/friends')
+    getAllFriends(@Req() req: Request) {
+        return this.usersService.getAllFriends(req.user);
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @Post('/friends/request')
     sendFriendshipRequest(@Body('id') id: string, @Req() req: Request) {
         return this.usersService.sendFriendshipRequest(id, req.user);
     }
 
+    @UseGuards(JwtAuthGuard)
+    @Patch('/friends/request/response/:id')
+    acceptFriendshipRequest(@Param('id') requestId: string, @Req() req: Request) {
+        return this.usersService.acceptFriendshipRequest(requestId, req.user);
+    }
 
     @Post('/login')
     login(@Body() userLoginDto: UserLoginDto) {

@@ -3,12 +3,10 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateUserDto } from './dto/createUser.dto';
 import {v4 as uuid} from "uuid";
 import {hash} from "argon2";
-import { User, Post } from '@prisma/client';
+import { User, FriendshipRequest } from '@prisma/client';
 import { UserLoginDto } from './dto/userLogin.dto';
 import { AuthService } from 'src/auth/auth.service';
 import { UpdateUserDto } from './dto/updateUser.dto';
-import { CreatePostDto } from '../main-page/dto/createPost.dto';
-import { UpdatePostDto } from '../main-page/dto/updatePost.dto';
 
 @Injectable()
 export class UsersService {
@@ -115,6 +113,19 @@ export class UsersService {
     // SEND A FRIENDSHIP REQUEST
     //
 
+    async getAllFriends(userPayload: any): Promise<FriendshipRequest[]> {
+        const {userId} = userPayload;
+
+        const friendship = await this.prismaService.friendshipRequest.findMany({
+            where: {
+                toUserId: userId,
+                friendshipRequestStatus: true
+            }
+        });
+
+        return friendship;
+    }
+
     async sendFriendshipRequest(toUserId: string, userPayload: any): Promise<void> {
         const {userId} = userPayload;
         //CHECK IF THE USER EXISTS  
@@ -131,6 +142,33 @@ export class UsersService {
                 id: uuid(),
                 toUserId: toUserId,
                 fromUserId: userId
+            }
+        });
+
+        return;
+    }
+
+    async acceptFriendshipRequest(requestId: string, userPayload: any): Promise<void> {
+        const {userId} = userPayload;
+        //CHECAR SE O USUARIO QUE ESTA ACEITANDO A REQUISICAO, FOI MESMO QUE O QUE RECEVEU O REQUEST DE OUTRO USUARIO
+        const friendshipRequest = await this.prismaService.friendshipRequest.findFirst({
+            where: {
+                id: requestId
+            }
+        });
+
+        if(!friendshipRequest) throw new ForbiddenException('The friendship request does not exists');
+
+        const friendshipRequestBelongsToUser = friendshipRequest.toUserId === userId;
+
+        if(!friendshipRequestBelongsToUser) throw new ForbiddenException('You cant accept this request');
+
+        const acceptFriendshipRequest = await this.prismaService.friendshipRequest.update({
+            where: {
+                id: requestId
+            },
+            data: {
+                friendshipRequestStatus: true
             }
         });
 
