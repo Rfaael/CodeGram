@@ -1,7 +1,7 @@
 import { ConnectedSocket, MessageBody, SubscribeMessage, WebSocketGateway, WebSocketServer } from "@nestjs/websockets";
-import { Socket } from "dgram";
+// import { Socket } from "dgram";
 import { Server } from "http";
-
+import {Socket} from "socket.io";
 
 @WebSocketGateway({
     cors: {
@@ -13,11 +13,27 @@ export class EventsGateway {
     server: Server;
 
 
-    @SubscribeMessage('message')
-    handleMessage(@MessageBody() messageBody: string, @ConnectedSocket() client: Socket) {
-        // console.log(client);
-        console.log(messageBody)
-        return;
+    @SubscribeMessage('sendMessage')
+    handleMessage(@MessageBody() messageBody: any, @ConnectedSocket() client: Socket) {
+      this.server.emit('geralMessage', messageBody);
+      return;
     }
 
+    @SubscribeMessage('createRoom')
+    createRoom(socket: Socket, data: string) {
+      //MAKE A NEW ROOM
+      socket.join(data);
+      return;
+    }
+
+    @SubscribeMessage('messageRoom')
+    sendMessageInRoom(socket: Socket, data: any) {
+      const {roomId, msgValue} = data;
+
+      if(roomId == "") {
+        socket.emit('receive-message', msgValue)
+      }else {
+        socket.to(roomId).emit('receive-message', msgValue)
+      }
+    }
 }

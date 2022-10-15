@@ -7,6 +7,7 @@ import { UpdatePostDto } from '../main-page/dto/updatePost.dto';
 import { UpdateUserDto } from './dto/updateUser.dto';
 import { UserLoginDto } from './dto/userLogin.dto';
 import { UsersService } from './users.service';
+import { EventsGateway } from 'src/chat-gateway/events.gateway';
 
 @Controller('users')
 export class UsersController {
