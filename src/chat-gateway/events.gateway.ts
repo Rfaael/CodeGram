@@ -30,10 +30,10 @@ export class EventsGateway {
     sendMessageInRoom(socket: Socket, data: any) {
       const {roomId, msgValue} = data;
 
-      if(roomId == "") {
-        socket.emit('receive-message', msgValue)
+      if(roomId == "")   {
+        socket.broadcast.emit('receive-message-geral', msgValue)
       }else {
-        socket.to(roomId).emit('receive-message', msgValue)
+        socket.to(roomId).emit(`message-from-room`, msgValue)
       }
     }
 }
