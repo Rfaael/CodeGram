@@ -14,7 +14,7 @@ export class MainPageService {
     ) {}
     
     // ================//
-    // ===> POSTS =====//
+    // === POSTS =====//
     // ================//
     async createPost(createPostDto: CreatePostDto, userPayload: any): Promise<Post> {
         const {userId} = userPayload;
@@ -99,7 +99,7 @@ export class MainPageService {
     }
 
     // ====================//
-    // ===> COMMENTS =====//
+    // === COMMENTS =====//
     // ===================//
 
     async makeCommentOnPost(postId: string, makeCommentDto: MakeCommentDto, userPayload: any): Promise<void> {
@@ -184,7 +184,7 @@ export class MainPageService {
     }
 
     // ================//
-    // ===> LIKES =====//
+    // === LIKES =====//
     // ================//
 
     async likeOnPost(postId: string, userPayload: any) {
@@ -249,5 +249,12 @@ export class MainPageService {
         })
         
         return;
+    }
+
+    // ================//
+    // === CHAT ======//
+    // ================//
+    async openChat() {
+        
     }
 }

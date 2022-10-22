@@ -1,5 +1,4 @@
 import { ConnectedSocket, MessageBody, SubscribeMessage, WebSocketGateway, WebSocketServer } from "@nestjs/websockets";
-// import { Socket } from "dgram";
 import { Server } from "http";
 import {Socket} from "socket.io";
 
@@ -7,6 +6,7 @@ import {Socket} from "socket.io";
     cors: {
       origin: '*',
     },
+    namespace: '/chat'
   })
 export class EventsGateway {
     @WebSocketServer()
@@ -14,7 +14,7 @@ export class EventsGateway {
 
 
     @SubscribeMessage('sendMessage')
-    handleMessage(@MessageBody() messageBody: any, @ConnectedSocket() client: Socket) {
+    handleMessage(@MessageBody() messageBody: any, @ConnectedSocket() socket: Socket) {
       this.server.emit('geralMessage', messageBody);
       return;
     }
@@ -31,9 +31,9 @@ export class EventsGateway {
       const {roomId, msgValue} = data;
 
       if(roomId == "")   {
-        socket.broadcast.emit('receive-message-geral', msgValue)
+        socket.broadcast.emit('receive-message-geral', msgValue);
       }else {
-        socket.to(roomId).emit(`message-from-room`, msgValue)
+        socket.to(roomId).emit(`message-from-room`, msgValue);
       }
     }
 }

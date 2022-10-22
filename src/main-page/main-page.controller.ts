@@ -1,5 +1,6 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Req, UseGuards } from '@nestjs/common';
-import { Request } from 'express';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Req, Res, UseGuards } from '@nestjs/common';
+import { Request, Response } from 'express';
+import { join } from 'path';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { CreatePostDto } from './dto/createPost.dto';
 import { MakeCommentDto } from './dto/makeComment.dto';
@@ -76,4 +77,14 @@ export class MainPageController {
     deleteLikeOnPost(@Param('id') postId: string, @Param('likeId') likeId: string, @Req() req: Request) {
         return this.mainPageService.deleteLikeOnPost(postId, likeId, req.user);
     }   
+
+    // ================//
+    // ===> CHAT ======//
+    // ================//
+    @UseGuards(JwtAuthGuard)
+    @Get('/chat')
+    startChat(@Req() req: Request, @Res() res: Response) {
+        // RETURN THE CLIENT INTO .HTML
+        return res.sendFile(join(__dirname, '../../../code-gram-client/index.html'))
+    }
 }
